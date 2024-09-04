@@ -62,7 +62,7 @@ const Indicator = GObject.registerClass(
             const proc = Gio.Subprocess.new(changeStatusCmd, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
 
             proc.communicate_utf8_async(null, null, async (sucprocess, result) => {
-              const [stdout, stderr] = proc.communicate_utf8_finish(result);
+              proc.communicate_utf8_finish(result);
               this.refresh();
             });
           });
@@ -78,17 +78,18 @@ const Indicator = GObject.registerClass(
     }
 
     refresh() {
-      console.log('[YaDiskStatus]', 'refresh');
       this.getStatus()
         .then(result => {
           this.itemStatus.label.text = result.message;
           this.statusChangeItem.label.text = _('Start');
           this.icon.gicon = Gio.icon_new_for_string(this.errorIconPath);
-          console.log('[YaDiskStatus]', result);
+          console.log('[YaDiskStatus]', 'refresh', result);
+
           if (result.message.includes('idle')) {
             this.icon.gicon = Gio.icon_new_for_string(this.idleIconPath);
             this.statusChangeItem.label.text = _('Stop');
           }
+
           if (result.message.includes('index')) {
             this.icon.gicon = Gio.icon_new_for_string(this.indexIconPath);
           }
