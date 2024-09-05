@@ -50,7 +50,6 @@ const Indicator = GObject.registerClass(
       this.statusChangeItem.connect('activate', () => {
         this.getStatus()
           .then(result => {
-            console.log('[YaDiskStatus]', 'activate status');
             let changeStatusCmd = ['yandex-disk'];
 
             if (result.message.includes('idle')) {
@@ -117,7 +116,7 @@ export default class IndicatorExampleExtension extends Extension {
     this._indicator = new Indicator(this.metadata);
     Main.panel.addToStatusArea(this.uuid, this._indicator);
     this._indicator.refresh();
-    this._sourceId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 5, () => {
+    this._sourceId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 3, () => {
       this._indicator.refresh();
 
       return GLib.SOURCE_CONTINUE;

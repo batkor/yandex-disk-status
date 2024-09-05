@@ -1,6 +1,6 @@
 {
   "name": "YaDiskStatus",
-  "description": "Extesion to show status yandex disk.",
+  "description": "Extension to show yandex disk status.",
   "uuid": "YaDiskStatus@batkor.net",
   "shell-version": [
     "46"
