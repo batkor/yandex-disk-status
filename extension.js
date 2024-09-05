@@ -82,6 +82,7 @@ const Indicator = GObject.registerClass(
           this.itemStatus.label.text = result.message;
           this.statusChangeItem.label.text = _('Start');
           this.icon.gicon = Gio.icon_new_for_string(this.errorIconPath);
+          this.statusChangeItem.reactive = true;
           console.log('[YaDiskStatus]', 'refresh', result);
 
           if (result.message.includes('idle')) {
@@ -92,21 +93,31 @@ const Indicator = GObject.registerClass(
           if (result.message.includes('index')) {
             this.icon.gicon = Gio.icon_new_for_string(this.indexIconPath);
           }
+        })
+        .catch(() => {
+          this.icon.gicon = Gio.icon_new_for_string(this.errorIconPath);
+          this.statusChangeItem.reactive = false;
+          this.itemStatus.label.text = _('Not found yandex-disk tool.');
         });
     }
 
     getStatus() {
       return new Promise((resolve, reject) => {
-        const proc = Gio.Subprocess.new(['yandex-disk', 'status'],
-          Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
-
-        proc.communicate_utf8_async(null, null, (sucprocess, result, data) => {
-          const [stdout, stderr] = proc.communicate_utf8_finish(result);
-          resolve({
-            'result': stdout,
-            'message': stderr,
+        try {
+          const proc = Gio.Subprocess.new(['yandex-disk', 'status'],
+            Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
+          proc.communicate_utf8_async(null, null, (sucprocess, result, data) => {
+            const [stdout, stderr] = proc.communicate_utf8_finish(result);
+            resolve({
+              'result': stdout,
+              'message': stderr,
+            });
           });
-        });
+        }
+        catch (e) {
+          console.log('[YaDiskStatus]', e);
+          reject(false)
+        }
       });
     }
   });
